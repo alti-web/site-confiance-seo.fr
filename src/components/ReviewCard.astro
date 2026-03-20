@@ -1,0 +1,76 @@
+---
+import StarRating from './StarRating.astro';
+
+interface Props {
+  author: string;
+  initials: string;
+  rating: number;
+  text: string;
+  date: string;
+}
+
+const { author, initials, rating, text, date } = Astro.props;
+---
+
+<div class="review">
+  <div class="review-header">
+    <div class="avatar">{initials}</div>
+    <div>
+      <p class="author">{author}</p>
+      <p class="date">{date}</p>
+    </div>
+    <div class="review-rating">
+      <StarRating rating={rating} />
+    </div>
+  </div>
+  <p class="text">{text}</p>
+</div>
+
+<style>
+  .review {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .review-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #1e3a5f;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+  .author {
+    font-weight: 600;
+    color: #1e3a5f;
+    margin: 0;
+    font-size: 0.95rem;
+  }
+  .date {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin: 0.15rem 0 0;
+  }
+  .review-rating {
+    margin-left: auto;
+  }
+  .text {
+    color: #374151;
+    line-height: 1.7;
+    margin: 0;
+    font-size: 0.95rem;
+  }
+</style>

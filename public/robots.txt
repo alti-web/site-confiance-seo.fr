@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://site-confiance-seo.fr/sitemap-index.xml

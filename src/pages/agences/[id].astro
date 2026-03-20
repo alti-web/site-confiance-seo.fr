@@ -1,0 +1,135 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import StarRating from '../../components/StarRating.astro';
+import ReviewCard from '../../components/ReviewCard.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const agences = await getCollection('agences');
+  return agences.map((agence) => ({
+    params: { id: agence.data.slug },
+    props: { agence },
+  }));
+}
+
+const { agence } = Astro.props;
+const { Content } = await render(agence);
+const data = agence.data;
+
+const allPosts = await getCollection('blog');
+const relatedPosts = allPosts.filter((post) =>
+  data.relatedArticles.includes(post.id)
+);
+
+const jsonLd = data.type === 'freelance'
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name: data.name,
+      url: data.website,
+      jobTitle: 'Développeur Freelance React.js / Next.js',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: data.city,
+        addressCountry: 'FR',
+      },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: data.note,
+        bestRating: 5,
+        ratingCount: data.noteCount,
+      },
+      review: data.reviews.map((r) => ({
+        '@type': 'Review',
+        author: { '@type': 'Person', name: r.author },
+        reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5 },
+        reviewBody: r.text,
+        datePublished: r.date,
+      })),
+    }
+  : {
+      '@context': 'https://schema.org',
+      '@type': 'LocalBusiness',
+      name: data.name,
+      url: data.website,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: data.city,
+        addressCountry: 'FR',
+      },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: data.note,
+        bestRating: 5,
+        ratingCount: data.noteCount,
+      },
+      review: data.reviews.map((r) => ({
+        '@type': 'Review',
+        author: { '@type': 'Person', name: r.author },
+        reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5 },
+        reviewBody: r.text,
+        datePublished: r.date,
+      })),
+    };
+---
+
+<BaseLayout
+  title={data.metaTitle}
+  description={data.metaDescription}
+  jsonLd={jsonLd}
+>
+  <div class="container" style="padding-top: 1rem; padding-bottom: 3rem; max-width: 800px;">
+    <Breadcrumb items={[
+      { label: 'Accueil', href: '/' },
+      { label: 'Agences & Avis', href: '/agences/' },
+      { label: data.name },
+    ]} />
+
+    <div class="agency-header">
+      <h1>{data.h1}</h1>
+      <div class="agency-meta">
+        <span class="agency-tag">{data.type === 'freelance' ? 'Freelance' : 'Agence'}</span>
+        <span class="agency-tag">{data.speciality}</span>
+        <span class="agency-location">{data.city}</span>
+        <StarRating rating={data.note} />
+      </div>
+      {data.website && (
+        <p style="margin-top: 1rem; font-size: 0.9rem;">
+          Site web : <a href={data.website} target="_blank" rel="noopener noreferrer">{data.website}</a>
+        </p>
+      )}
+    </div>
+
+    <div class="article-content" style="max-width: 100%; padding: 0;">
+      <Content />
+    </div>
+
+    <section style="margin-top: 2.5rem;">
+      <h2>Témoignages clients</h2>
+      {data.reviews.map((review) => (
+        <ReviewCard
+          author={review.author}
+          initials={review.initials}
+          rating={review.rating}
+          text={review.text}
+          date={review.date}
+        />
+      ))}
+    </section>
+
+    {relatedPosts.length > 0 && (
+      <section class="related-articles">
+        <h2>Articles en lien</h2>
+        <div class="cards-grid" style="grid-template-columns: 1fr;">
+          {relatedPosts.map((post) => (
+            <a href={`/blog/${post.id}/`} class="post-card">
+              <h3>{post.data.title}</h3>
+              <p>{post.data.excerpt}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+</BaseLayout>

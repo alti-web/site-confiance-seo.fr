@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import AgencyCard from '../../components/AgencyCard.astro';
+import { getCollection } from 'astro:content';
+
+const agences = (await getCollection('agences')).sort((a, b) => b.data.note - a.data.note);
+---
+
+<BaseLayout
+  title="Agences & Freelances évalués — Avis vérifiés et notes détaillées"
+  description="Découvrez nos fiches avis sur des agences digitales et freelances vérifiés. Notes, témoignages clients et analyse objective pour vous aider à choisir."
+>
+  <div class="page-header">
+    <div class="container">
+      <Breadcrumb items={[{ label: 'Accueil', href: '/' }, { label: 'Agences & Avis' }]} />
+      <h1>Agences & Freelances évalués</h1>
+      <p>Nos fiches avis détaillées pour vous aider à choisir le bon prestataire digital.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="cards-grid">
+        {agences.map((agence) => (
+          <AgencyCard
+            name={agence.data.name}
+            slug={agence.data.slug}
+            speciality={agence.data.speciality}
+            city={agence.data.city}
+            note={agence.data.note}
+            type={agence.data.type}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background: #fff;">
+    <div class="container" style="max-width: 700px; text-align: center;">
+      <h2>Comment sont établies nos notes ?</h2>
+      <p>Chaque fiche est construite à partir de témoignages clients vérifiés, d'une analyse de la méthodologie du prestataire et de critères objectifs : transparence, résultats mesurables, communication, respect des délais. Nous attribuons une note moyenne pondérée sur 5 étoiles.</p>
+      <p>Nous indiquons systématiquement les <strong>points forts</strong> et les <strong>points d'attention</strong> de chaque prestataire, pour vous offrir une vision complète et honnête.</p>
+    </div>
+  </section>
+</BaseLayout>

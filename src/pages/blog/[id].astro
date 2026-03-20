@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.data.title,
+  datePublished: post.data.date,
+  author: {
+    '@type': 'Organization',
+    name: post.data.author,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Site Confiance SEO',
+    url: 'https://site-confiance-seo.fr',
+  },
+  description: post.data.metaDescription,
+};
+---
+
+<BaseLayout
+  title={post.data.metaTitle}
+  description={post.data.metaDescription}
+  ogType="article"
+  jsonLd={jsonLd}
+>
+  <div class="article-content">
+    <Breadcrumb items={[
+      { label: 'Accueil', href: '/' },
+      { label: 'Blog', href: '/blog/' },
+      { label: post.data.title },
+    ]} />
+    <h1>{post.data.title}</h1>
+    <p class="meta">
+      Par {post.data.author} — {new Date(post.data.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+    </p>
+    <Content />
+  </div>
+</BaseLayout>

@@ -1,0 +1,69 @@
+---
+import StarRating from './StarRating.astro';
+
+interface Props {
+  name: string;
+  slug: string;
+  speciality: string;
+  city: string;
+  note: number;
+  type: string;
+}
+
+const { name, slug, speciality, city, note, type } = Astro.props;
+---
+
+<a href={`/agences/${slug}/`} class="card">
+  <div class="card-header">
+    <span class="badge">{type === 'freelance' ? 'Freelance' : 'Agence'}</span>
+    <span class="city">{city}</span>
+  </div>
+  <h3>{name}</h3>
+  <p class="speciality">{speciality}</p>
+  <StarRating rating={note} />
+</a>
+
+<style>
+  .card {
+    display: block;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .badge {
+    background: #ecfdf5;
+    color: #059669;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+  }
+  .city {
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+  h3 {
+    font-size: 1.15rem;
+    color: #1e3a5f;
+    margin: 0 0 0.5rem;
+  }
+  .speciality {
+    font-size: 0.9rem;
+    color: #4b5563;
+    margin: 0 0 0.75rem;
+  }
+</style>

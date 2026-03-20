@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AgencyCard from '../components/AgencyCard.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = (await getCollection('blog')).sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+const recentPosts = allPosts.slice(0, 4);
+const agences = await getCollection('agences');
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Site Confiance SEO',
+  url: 'https://site-confiance-seo.fr',
+  description: 'Le guide indépendant pour bien choisir son agence digitale.',
+};
+---
+
+<BaseLayout
+  title="Comment bien choisir son agence digitale ? Conseils, avis et retours d'expérience"
+  description="Site Confiance SEO : le guide indépendant pour choisir votre agence digitale. Conseils pratiques, avis vérifiés et retours d'expérience sur les agences SEO, dev web et marketing."
+  jsonLd={jsonLd}
+>
+  <section class="hero">
+    <div class="container">
+      <h1>Comment bien choisir son agence digitale&nbsp;?<br />Conseils, avis et retours d'expérience</h1>
+      <p>Le guide indépendant pour vous aider à trouver le bon prestataire digital. Des conseils concrets, des avis vérifiés et des retours d'expérience terrain.</p>
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="/blog/" class="btn btn-primary">Lire nos conseils</a>
+        <a href="/agences/" class="btn btn-secondary">Voir les avis agences</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-title">
+        <h2>Derniers articles</h2>
+        <a href="/blog/">Voir tous les articles &rarr;</a>
+      </div>
+      <div class="cards-grid">
+        {recentPosts.map((post) => (
+          <a href={`/blog/${post.id}/`} class="post-card">
+            <span class="date">{new Date(post.data.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+            <h3>{post.data.title}</h3>
+            <p>{post.data.excerpt}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background: #fff; padding: 3rem 0;">
+    <div class="container">
+      <div class="section-title">
+        <h2>Agences & freelances évalués</h2>
+        <a href="/agences/">Toutes les fiches &rarr;</a>
+      </div>
+      <div class="cards-grid">
+        {agences.map((agence) => (
+          <AgencyCard
+            name={agence.data.name}
+            slug={agence.data.slug}
+            speciality={agence.data.speciality}
+            city={agence.data.city}
+            note={agence.data.note}
+            type={agence.data.type}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" style="text-align: center; max-width: 700px;">
+      <h2>Pourquoi nous faire confiance ?</h2>
+      <p>Site Confiance SEO est un <strong>média indépendant</strong>. Nous ne sommes ni un annuaire payant, ni un comparateur sponsorisé. Nos avis sont basés sur des retours d'expérience réels et notre analyse méthodique de chaque prestataire. Notre objectif : vous donner les clés pour faire le bon choix.</p>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 2rem; text-align: center;">
+        <div>
+          <div style="font-size: 2rem; color: #22c55e;">&#9733;</div>
+          <strong>Avis vérifiés</strong>
+          <p style="font-size: 0.9rem; color: #6b7280;">Chaque fiche est basée sur des retours clients analysés</p>
+        </div>
+        <div>
+          <div style="font-size: 2rem; color: #22c55e;">&#128270;</div>
+          <strong>Analyse objective</strong>
+          <p style="font-size: 0.9rem; color: #6b7280;">Points forts ET points d'attention pour chaque prestataire</p>
+        </div>
+        <div>
+          <div style="font-size: 2rem; color: #22c55e;">&#128218;</div>
+          <strong>Conseils concrets</strong>
+          <p style="font-size: 0.9rem; color: #6b7280;">Des articles pratiques pour vous aider à décider</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

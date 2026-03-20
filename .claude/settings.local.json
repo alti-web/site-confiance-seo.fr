@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(wc -l \"C:/Users/benoi/projets/site-confiance-seo.fr/src/content/blog/\"*.md)",
+      "Bash(npm run:*)"
+    ]
+  }
+}

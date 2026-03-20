@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = (await getCollection('blog')).sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+---
+
+<BaseLayout
+  title="Blog — Conseils pour travailler avec une agence digitale"
+  description="Articles et conseils pratiques pour bien choisir, évaluer et collaborer avec une agence SEO, un freelance web ou un prestataire digital."
+>
+  <div class="page-header">
+    <div class="container">
+      <Breadcrumb items={[{ label: 'Accueil', href: '/' }, { label: 'Blog' }]} />
+      <h1>Blog — Conseils & guides pratiques</h1>
+      <p>Tout ce qu'il faut savoir pour bien choisir et travailler avec une agence digitale ou un freelance.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="cards-grid">
+        {allPosts.map((post) => (
+          <a href={`/blog/${post.id}/`} class="post-card">
+            <span class="date">{new Date(post.data.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+            <h3>{post.data.title}</h3>
+            <p>{post.data.excerpt}</p>
+            <div style="margin-top: auto; padding-top: 0.75rem;">
+              {post.data.tags.map((tag: string) => (
+                <span style="display: inline-block; background: #f3f4f6; color: #6b7280; font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 12px; margin-right: 0.4rem;">{tag}</span>
+              ))}
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

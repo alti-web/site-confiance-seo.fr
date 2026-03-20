@@ -1,0 +1,69 @@
+---
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.label,
+    ...(item.href ? { item: new URL(item.href, Astro.site).toString() } : {}),
+  })),
+};
+---
+
+<nav class="breadcrumb" aria-label="Fil d'Ariane">
+  <ol>
+    {items.map((item, i) => (
+      <li>
+        {item.href ? <a href={item.href}>{item.label}</a> : <span>{item.label}</span>}
+        {i < items.length - 1 && <span class="separator">/</span>}
+      </li>
+    ))}
+  </ol>
+</nav>
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+<style>
+  .breadcrumb {
+    padding: 1rem 0 0.5rem;
+    font-size: 0.85rem;
+  }
+  ol {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding: 0;
+    margin: 0;
+  }
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  a {
+    color: #1e3a5f;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  span {
+    color: #6b7280;
+  }
+  .separator {
+    color: #d1d5db;
+    margin: 0 0.25rem;
+  }
+</style>
